@@ -46,5 +46,21 @@ class TicTacToeTest(unittest.TestCase):
         nextMove = self.ticTacToe.nextMove(currentBoard)
         self.assertEquals("3", nextMove, "first player puts an X on bottom right box")
 
+    def test_SecondMove_picksHighestChanceOfVictoryOrLowerChanceOfFailure(self):
+        currentBoard = "3"
+        self.ticTacToe.moves = {
+            "3": {
+                "31": {"failures": 500, "victories": 1000, "draws": 2000},
+                "32": {"failures": 1000, "victories": 300, "draws": 2000},
+                "34": {"failures": 100, "victories": 1000, "draws": 2000},
+                "35": {"failures": 500, "victories": 1000, "draws": 2000},
+                "36": {"failures": 500, "victories": 1000, "draws": 2000},
+                "37": {"failures": 500, "victories": 1000, "draws": 2000},
+                "38": {"failures": 500, "victories": 1000, "draws": 2000},
+                "39": {"failures": 200, "victories": 1000, "draws": 2000}
+            }
+        }
+        #TODO: Build this testcase for second move
+
 if __name__ == '__main__':
     unittest.main()
