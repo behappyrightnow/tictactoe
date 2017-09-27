@@ -3,7 +3,11 @@ class TicTacToe(object):
         self.board = ""
         self.moves = {}
 
-    def nextMove(self, currentBoard):
+    def makeMove(self):
+        self.board = self.nextMove(self.board)
+
+
+    def nextMove(self):
         prior = "START"
         if self.board != "":
             prior = self.board
