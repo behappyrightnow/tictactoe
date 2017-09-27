@@ -25,7 +25,7 @@ class TicTacToeTest(SmartTest):
                 "9": {"failures": 200, "victories": 8000, "draws": 2000}
             }
         }
-        nextMove = self.ticTacToe.nextMove()
+        nextMove = self.ticTacToe.next_move()
         self.assertEquals("9", nextMove, "first player puts an X on bottom right box")
 
 
@@ -44,7 +44,7 @@ class TicTacToeTest(SmartTest):
                 "9": {"failures": 200, "victories": 1000, "draws": 2000}
             }
         }
-        nextMove = self.ticTacToe.nextMove()
+        nextMove = self.ticTacToe.next_move()
         self.assertEquals("3", nextMove, "first player puts an X on bottom right box")
 
     def test_SecondMove_picksHighestChanceOfVictoryOrLowerChanceOfFailure(self):
@@ -62,7 +62,7 @@ class TicTacToeTest(SmartTest):
             }
         }
         #TODO: Build this testcase for second move
-        nextMove = self.ticTacToe.nextMove()
+        nextMove = self.ticTacToe.next_move()
         self.assertEquals("38", nextMove, "first player puts an X on bottom right box")
 
     def test_initMovesKnowledge(self):
