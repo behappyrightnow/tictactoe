@@ -5,7 +5,7 @@ from smarttest import SmartTest
 class TicTacToeTest(SmartTest):
 
     def setUp(self):
-        self.ticTacToe = TicTacToe()
+        self.ticTacToe = TicTacToe(numSquares=3)
 
     def testInitializeGame(self):
         pass
@@ -64,6 +64,19 @@ class TicTacToeTest(SmartTest):
         #TODO: Build this testcase for second move
         nextMove = self.ticTacToe.nextMove()
         self.assertEquals("38", nextMove, "first player puts an X on bottom right box")
+
+    def test_initMovesKnowledge(self):
+        keysExpected = [
+            "START", "1", "2", "3", "12", "13", "21", "23", "31", "32"
+        ]
+        keysNotExpected = [
+            "11", "22", "33"
+        ]
+        for key in keysExpected:
+            self.assertTrue(key in self.ticTacToe.moves, "%s should be in move knowledge structure" % key)
+
+        for key in keysNotExpected:
+            self.assertTrue(key not in self.ticTacToe.moves, "%s should not be in move knowledge structure" % key)
 
 if __name__ == '__main__':
     unittest.main()

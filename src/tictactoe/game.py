@@ -1,10 +1,29 @@
 class TicTacToe(object):
-    def __init__(self):
+    def __init__(self, numSquares=9):
         self.board = ""
         self.moves = {}
+        self.numSquares = numSquares
+        # print "Building default knowledge structure..."
+        self.initMovesKnowledge()
+        # print "Done initializing default knowledge structure. Starting to play game."
+
+    def nullKnowledge(self):
+        return {"failures": 0, "victories": 0, "draws": 0}
+
+    def initMovesKnowledge(self, board=""):
+        prior = board
+        if prior == "":
+            prior = "START"
+        for i in range(1,self.numSquares+1):
+            newMove = str(i)
+            if newMove not in board:
+                newBoard = "%s%s" % (board, newMove)
+                self.moves[prior] = self.nullKnowledge()
+                self.initMovesKnowledge(newBoard)
+
 
     def makeMove(self):
-        self.board = self.nextMove(self.board)
+        self.board = self.nextMove()
 
 
     def nextMove(self):
@@ -32,4 +51,8 @@ class TicTacToe(object):
                     bestMoveID = moveID
         return bestMoveID
 
-
+if __name__ == '__main__':
+    ticTacToe = TicTacToe()
+    while len(ticTacToe.board) < 9:
+        ticTacToe.makeMove()
+        print ticTacToe.board
