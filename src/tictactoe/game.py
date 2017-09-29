@@ -1,11 +1,17 @@
 class TicTacToe(object):
+    VICTORY = 0
+    DRAW = 1
+    OPEN = 2
+    PLAYER1 = 3
+    PLAYER2 = 4
+
     def __init__(self, numSquares=9):
         self.board = ""
         self.moves = {}
         self.numSquares = numSquares
-        # print "Building default knowledge structure..."
+        print "Building default knowledge structure..."
         self.init_moves_knowledge()
-        # print "Done initializing default knowledge structure. Starting to play game."
+        print "Done initializing default knowledge structure. Starting to play game."
 
     def null_knowledge(self):
         return {"failures": 0, "victories": 0, "draws": 0}
@@ -18,9 +24,44 @@ class TicTacToe(object):
             newMove = str(i)
             if newMove not in board:
                 newBoard = "%s%s" % (board, newMove)
-                self.moves[prior] = self.null_knowledge()
+                if prior not in self.moves:
+                    self.moves[prior] = {}
+                self.moves[prior][newBoard] = self.null_knowledge()
                 self.init_moves_knowledge(newBoard)
 
+    def hasWon(self, player):
+        playerMoves = self.movesFor(player)
+        winningPatterns = ["123", "147", "789", "369", "159", "357", "456", "257"]
+        for winningPattern in winningPatterns:
+            won = False
+            for move in winningPattern:
+                match = True
+                if move not in playerMoves:
+                    match = False
+                    break
+            if match:
+                won = True
+                break
+        return won
+
+    def result(self):
+        if self.hasWon(self.PLAYER1) or self.hasWon(self.PLAYER2):
+            return self.VICTORY
+        else:
+            return self.OPEN
+
+    def movesFor(self,player):
+        answer = ""
+        for i,char in enumerate(self.board):
+            if player == self.PLAYER1:
+                test = i+1
+            elif player == self.PLAYER2:
+                test = i+2
+            else:
+                raise "Unrecognized input for player %s" % (str(player))
+            if test % 2 != 0:
+                answer = "%s%s" % (answer, char)
+        return answer
 
     def make_move(self):
         self.board = self.next_move()
@@ -52,7 +93,7 @@ class TicTacToe(object):
         return bestMoveID
 
 if __name__ == '__main__':
-    ticTacToe = TicTacToe()
+    ticTacToe = TicTacToe(numSquares=9)
     while len(ticTacToe.board) < 9:
         ticTacToe.make_move()
         print ticTacToe.board

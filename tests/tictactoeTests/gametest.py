@@ -77,6 +77,31 @@ class TicTacToeTest(SmartTest):
 
         for key in keysNotExpected:
             self.assertTrue(key not in self.ticTacToe.moves, "%s should not be in move knowledge structure" % key)
+        movesAtStart = self.ticTacToe.moves["START"]
+        expectedMoves = ["1", "2", "3"]
+        for move in expectedMoves:
+            self.assertTrue(move in movesAtStart, "should have found move %s" % move)
+
+        expectedMoves = ["12", "13"]
+        movesAt1 = self.ticTacToe.moves["1"]
+        for move in expectedMoves:
+            self.assertTrue(move in movesAt1, "should have found move %s" % move)
+
+    def test_checkOutcome_Victory(self):
+        self.ticTacToe.board = "1"
+        self.assertEquals(self.ticTacToe.OPEN, self.ticTacToe.result(), "game is still open")
+        self.ticTacToe.board = "1593748"
+        self.assertEquals(self.ticTacToe.VICTORY, self.ticTacToe.result(), "this position has won")
+
+    # def test_checkOutcome_Draw(self):
+    #     #TODO: Make testcase
+    #     self.ticTacToe.board = "193748"
+    #     self.assertEquals(self.ticTacToe.VICTORY, self.ticTacToe.result(), "this position has won")
+
+    def test_player1moves(self):
+        self.ticTacToe.board = "1593748"
+        self.assertEquals("1978", self.ticTacToe.movesFor(self.ticTacToe.PLAYER1), "moves for player 1")
+        self.assertEquals("534", self.ticTacToe.movesFor(self.ticTacToe.PLAYER2), "moves for player 2")
 
 if __name__ == '__main__':
     unittest.main()
