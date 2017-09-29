@@ -60,7 +60,9 @@ class TicTacToeTest(unittest.TestCase):
                 "39": {"failures": 200, "victories": 1000, "draws": 2000}
             }
         }
-        #TODO: Build this testcase for second move
+
+        nextMove = self.ticTacToe.nextMove(currentBoard)
+        self.assertEquals("34", nextMove, "second player puts and X on top right box")
 
 if __name__ == '__main__':
     unittest.main()

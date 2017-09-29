@@ -5,6 +5,8 @@ class TicTacToe(object):
 
     def nextMove(self, currentBoard):
         prior = "START"
+        if currentBoard != '':
+            self.board = currentBoard
         if self.board != "":
             prior = self.board
 
