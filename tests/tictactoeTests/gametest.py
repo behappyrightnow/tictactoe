@@ -64,5 +64,7 @@ class TicTacToeTest(unittest.TestCase):
         nextMove = self.ticTacToe.nextMove(currentBoard)
         self.assertEquals("34", nextMove, "second player puts and X on top right box")
 
+        #$TO_DO: why move 3 was not removed in moves, but move 4?
+
 if __name__ == '__main__':
     unittest.main()
