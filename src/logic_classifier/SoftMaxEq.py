@@ -14,7 +14,7 @@ class SoftMax():
 
 if __name__ == '__main__':
     scores = [3.0, 1.0, 0.2]
-    scores = [1.0, 2.0, 3.0]
+    #scores = [1.0, 2.0, 3.0]
     sm = SoftMax()
     print(sm.softmax(scores).T)
 
