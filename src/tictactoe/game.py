@@ -1,3 +1,5 @@
+import random
+
 class TicTacToe(object):
     VICTORY = 0
     DRAW = 1
@@ -71,6 +73,12 @@ class TicTacToe(object):
     def make_move(self):
         self.board = self.next_move()
 
+    def make_random_move(self):
+        available_moves = ['1','2','3','4','5','6','7','8','9']
+        for move in self.board:
+            available_moves.remove(move)
+        randomMoveIndex = random.randrange(start=0, stop=len(available_moves))
+        self.board = "%s%s" % (self.board,available_moves[randomMoveIndex])
 
     def next_move(self):
         prior = "START"
@@ -97,17 +105,26 @@ class TicTacToe(object):
                     bestMoveID = moveID
         return bestMoveID
 
+    def startLearning(self, numGames=100):
+        for i in range(1,100):
+            print "Playing game %s" % i
+            print self.playGame()
+
+    def playGame(self):
+        ticTacToe.board = ""
+        while len(ticTacToe.board) < 9 and ticTacToe.result() == ticTacToe.OPEN:
+            ticTacToe.make_random_move()
+            print ticTacToe.board
+        if ticTacToe.result() == ticTacToe.VICTORY:
+            if ticTacToe.hasWon(ticTacToe.PLAYER1):
+                winner = "Player 1"
+            else:
+                winner = "Player 2"
+            return "The game ended in a victory for %s." % winner
+        elif ticTacToe.result() == ticTacToe.DRAW:
+            print "The game ended in a draw."
+
 if __name__ == '__main__':
     ticTacToe = TicTacToe(numSquares=9)
-    while len(ticTacToe.board) < 9 and ticTacToe.result() == ticTacToe.OPEN:
-        ticTacToe.make_move()
-        print ticTacToe.board
-    if ticTacToe.result() == ticTacToe.VICTORY:
-        if ticTacToe.hasWon(ticTacToe.PLAYER1):
-            winner = "Player 1"
-        else:
-            winner = "Player 2"
-        print "The game ended in a victory for %s." % winner
+    print ticTacToe.startLearning()
 
-    elif ticTacToe.result() == ticTacToe.DRAW:
-        print "The game ended in a draw."
