@@ -44,11 +44,16 @@ class TicTacToe(object):
                 break
         return won
 
+    def gameStillOpen(self):
+        return len(self.board) < 9
+
     def result(self):
         if self.hasWon(self.PLAYER1) or self.hasWon(self.PLAYER2):
             return self.VICTORY
-        else:
+        elif self.gameStillOpen():
             return self.OPEN
+        else:
+            return self.DRAW
 
     def movesFor(self,player):
         answer = ""
