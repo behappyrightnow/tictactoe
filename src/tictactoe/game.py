@@ -99,6 +99,15 @@ class TicTacToe(object):
 
 if __name__ == '__main__':
     ticTacToe = TicTacToe(numSquares=9)
-    while len(ticTacToe.board) < 9:
+    while len(ticTacToe.board) < 9 and ticTacToe.result() == ticTacToe.OPEN:
         ticTacToe.make_move()
         print ticTacToe.board
+    if ticTacToe.result() == ticTacToe.VICTORY:
+        if ticTacToe.hasWon(ticTacToe.PLAYER1):
+            winner = "Player 1"
+        else:
+            winner = "Player 2"
+        print "The game ended in a victory for %s." % winner
+
+    elif ticTacToe.result() == ticTacToe.DRAW:
+        print "The game ended in a draw."
