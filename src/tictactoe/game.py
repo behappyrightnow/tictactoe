@@ -105,12 +105,12 @@ class TicTacToe(object):
                     bestMoveID = moveID
         return bestMoveID
 
-    def startLearning(self, numGames=100):
+    def start_learning(self, numGames=100):
         for i in range(1,100):
             print "Playing game %s" % i
-            print self.playGame()
+            print self.play_game()
 
-    def playGame(self):
+    def play_game(self):
         ticTacToe.board = ""
         while len(ticTacToe.board) < 9 and ticTacToe.result() == ticTacToe.OPEN:
             ticTacToe.make_random_move()
@@ -123,8 +123,13 @@ class TicTacToe(object):
             return "The game ended in a victory for %s." % winner
         elif ticTacToe.result() == ticTacToe.DRAW:
             print "The game ended in a draw."
+        self.learn()
+
+    def learn(self):
+        #TODO: Go through each move and learn from it
+        pass
 
 if __name__ == '__main__':
     ticTacToe = TicTacToe(numSquares=9)
-    print ticTacToe.startLearning()
+    print ticTacToe.start_learning()
 
