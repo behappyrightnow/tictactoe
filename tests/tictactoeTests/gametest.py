@@ -93,6 +93,11 @@ class TicTacToeTest(SmartTest):
         self.ticTacToe.board = "1593748"
         self.assertEquals(self.ticTacToe.VICTORY, self.ticTacToe.result(), "this position has won")
 
+    def test_checkOutcome_Victory_Player2(self):
+        self.ticTacToe.board = "357189"
+        self.assertEquals(self.ticTacToe.VICTORY, self.ticTacToe.result(), "this position has won")
+        self.assertTrue(self.ticTacToe.hasWon(self.ticTacToe.PLAYER2), "player 2 should have won")
+
     def test_checkOutcome_Draw(self):
         self.ticTacToe.board = "375146289"
         self.assertEquals(self.ticTacToe.DRAW, self.ticTacToe.result(), "this position has drawn")

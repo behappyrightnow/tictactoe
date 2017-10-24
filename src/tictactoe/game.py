@@ -1,4 +1,6 @@
 import random
+import json
+import pickle
 
 class TicTacToe(object):
     VICTORY = 0
@@ -12,7 +14,9 @@ class TicTacToe(object):
         self.moves = {}
         self.numSquares = numSquares
         print "Building default knowledge structure..."
-        self.init_moves_knowledge()
+        # self.init_moves_knowledge()
+        with open("ticTacToe.pickle", "r") as f:
+            self.moves = pickle.load(f)
         print "Done initializing default knowledge structure. Starting to play game."
 
     def null_knowledge(self):
@@ -87,49 +91,124 @@ class TicTacToe(object):
 
         bestMove = None
         bestMoveID = None
-        moveData = self.moves[prior]
-        for moveID in moveData:
-            move = moveData[moveID]
-            if bestMove == None:
-                bestMove = move
-                bestMoveID = moveID
-            else:
-                if move["victories"] > bestMove["victories"]:
+        if prior in self.moves:
+            moveData = self.moves[prior]
+            for moveID in moveData:
+                move = moveData[moveID]
+                if bestMove == None:
                     bestMove = move
                     bestMoveID = moveID
-                elif move["failures"] < bestMove["failures"]:
-                    bestMove = move
-                    bestMoveID = moveID
-                elif move["draws"] > bestMove["draws"]:
-                    bestMove = move
-                    bestMoveID = moveID
+                else:
+                    if move["victories"] > bestMove["victories"]:
+                        bestMove = move
+                        bestMoveID = moveID
+                    elif move["failures"] < bestMove["failures"]:
+                        bestMove = move
+                        bestMoveID = moveID
+                    elif move["draws"] > bestMove["draws"]:
+                        bestMove = move
+                        bestMoveID = moveID
+        else:
+            raise "Database empty for this"
         return bestMoveID
 
     def start_learning(self, numGames=100):
-        for i in range(1,100):
-            print "Playing game %s" % i
-            print self.play_game()
+        blockSize = int(numGames / 10)
+        for i in range(1,numGames):
+            # print "Playing game %s" % i
+            self.play_game()
+            if i % blockSize == 0:
+                print "%s percent complete" % str(i*10/blockSize)
 
     def play_game(self):
         ticTacToe.board = ""
-        while len(ticTacToe.board) < 9 and ticTacToe.result() == ticTacToe.OPEN:
+        resultMsg = ""
+        while ticTacToe.result() == ticTacToe.OPEN:
             ticTacToe.make_random_move()
-            print ticTacToe.board
+            # print ticTacToe.board
         if ticTacToe.result() == ticTacToe.VICTORY:
             if ticTacToe.hasWon(ticTacToe.PLAYER1):
                 winner = "Player 1"
             else:
                 winner = "Player 2"
-            return "The game ended in a victory for %s." % winner
+            resultMsg = "The game ended in a victory for %s." % winner
         elif ticTacToe.result() == ticTacToe.DRAW:
-            print "The game ended in a draw."
+            resultMsg = "The game ended in a draw."
         self.learn()
+        return resultMsg
 
     def learn(self):
-        #TODO: Go through each move and learn from it
-        pass
+        prior = "START"
+
+        for index, move in enumerate(self.board):
+            if index % 2 == 0: #PLAYER 1
+                player = self.PLAYER1
+                otherPlayer = self.PLAYER2
+            else:
+                player = self.PLAYER2
+                otherPlayer = self.PLAYER1
+
+            nextMove = self.setupLearningStructure(move, prior)
+            if self.hasWon(player):
+                self.moves[prior][nextMove]["victories"] += 1
+            elif self.hasWon(otherPlayer):
+                self.moves[prior][nextMove]["failures"] += 1
+            else:
+                self.moves[prior][nextMove]["draws"] += 1
+            if prior == "START":
+                prior = move
+            else:
+                prior = nextMove
+
+    def setupLearningStructure(self, move, prior):
+        if prior not in self.moves:
+            self.moves[prior] = {}
+        if prior == "START":
+            nextMove = move
+        else:
+            nextMove = "%s%s" % (prior, move)
+        if nextMove not in self.moves[prior]:
+            self.moves[prior][nextMove] = {"victories": 0, "failures": 0, "draws": 0}
+        return nextMove
+
 
 if __name__ == '__main__':
     ticTacToe = TicTacToe(numSquares=9)
-    print ticTacToe.start_learning()
+    print "Playing 10 million games to learn"
+    ticTacToe.start_learning(numGames=10000000)
+    with open("/Users/Raha/PycharmProjects/tictactoe/ticTacToe.pickle", "wb") as f:
+        pickle.dump(ticTacToe.moves, f)
+    # with open("/Users/Raha/PycharmProjects/tictactoe/ticTacToe.pickle", "r") as f:
+    #     ticTacToe.moves = pickle.load(f)
+    print json.dumps(ticTacToe.moves["START"], indent=4)
 
+    #Run game with user on keyboard
+    print "Let's play some Tic Tac Toe"
+    whichPlayer = ""
+    while whichPlayer != "X" and whichPlayer != "0":
+        whichPlayer = raw_input("Which player are you? [X or 0]  ")
+    ticTacToe.board = ""
+    if whichPlayer == "X":
+        availableMoves = ["1","2","3","4","5","6","7","8","9"]
+        while ticTacToe.result() == ticTacToe.OPEN:
+            for move in ticTacToe.board:
+                if move in availableMoves:
+                    availableMoves.remove(move)
+            prompt = ""
+            for index, move in enumerate(availableMoves):
+                if index == 1:
+                    prompt = move
+                else:
+                    prompt = "%s,%s" % (prompt, move)
+            move = raw_input("Your move: [prompt]  ")
+            ticTacToe.board = "%s%s" % (ticTacToe.board, move)
+            ticTacToe.make_move()
+            print "I moved. The board is now: %s" % ticTacToe.board
+        if ticTacToe.result() == ticTacToe.VICTORY:
+            if ticTacToe.hasWon(ticTacToe.PLAYER1):
+                winner = "you"
+            else:
+                winner = "me"
+            resultMsg = "The game ended in a victory for %s." % winner
+        elif ticTacToe.result() == ticTacToe.DRAW:
+            resultMsg = "The game ended in a draw."
