@@ -14,26 +14,17 @@ class TicTacToe(object):
         self.moves = {}
         self.numSquares = numSquares
         print "Building default knowledge structure..."
-        # self.init_moves_knowledge()
-        with open("ticTacToe.pickle", "r") as f:
-            self.moves = pickle.load(f)
+        self.init_moves_knowledge()
         print "Done initializing default knowledge structure. Starting to play game."
 
     def null_knowledge(self):
         return {"failures": 0, "victories": 0, "draws": 0}
 
     def init_moves_knowledge(self, board=""):
-        prior = board
-        if prior == "":
-            prior = "START"
-        for i in range(1,self.numSquares+1):
-            newMove = str(i)
-            if newMove not in board:
-                newBoard = "%s%s" % (board, newMove)
-                if prior not in self.moves:
-                    self.moves[prior] = {}
-                self.moves[prior][newBoard] = self.null_knowledge()
-                self.init_moves_knowledge(newBoard)
+        with open("/Users/Raha/PycharmProjects/tictactoe/learning/ticTacToe.pickle", "r") as f:
+            self.moves = pickle.load(f)
+
+
 
     def hasWon(self, player):
         playerMoves = self.movesFor(player)
@@ -84,11 +75,33 @@ class TicTacToe(object):
         randomMoveIndex = random.randrange(start=0, stop=len(available_moves))
         self.board = "%s%s" % (self.board,available_moves[randomMoveIndex])
 
+    def available_moves(self):
+        availableMoves = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
+        for move in self.board:
+            availableMoves.remove(move)
+        return availableMoves
+
+    def next_move_that_wins_or_only_move(self):
+        origBoard = self.board
+        availableMoves = self.available_moves()
+        if len(availableMoves) == 1:
+            return availableMoves[0]
+        for move in availableMoves:
+            self.board = "%s%s" % (origBoard, move)
+            if self.result() == self.VICTORY:
+                self.board = origBoard
+                return move
+        return None
+
     def next_move(self):
         prior = "START"
         if self.board != "":
             prior = self.board
 
+        winningMove = self.next_move_that_wins_or_only_move()
+        if winningMove != None:
+            self.board = "%s%s" % (self.board, winningMove)
+            return self.board
         bestMove = None
         bestMoveID = None
         if prior in self.moves:
@@ -175,13 +188,10 @@ class TicTacToe(object):
 if __name__ == '__main__':
     ticTacToe = TicTacToe(numSquares=9)
     print "Playing 10 million games to learn"
-    ticTacToe.start_learning(numGames=10000000)
-    with open("/Users/Raha/PycharmProjects/tictactoe/ticTacToe.pickle", "wb") as f:
-        pickle.dump(ticTacToe.moves, f)
-    # with open("/Users/Raha/PycharmProjects/tictactoe/ticTacToe.pickle", "r") as f:
-    #     ticTacToe.moves = pickle.load(f)
+    # ticTacToe.start_learning(numGames=10000000)
+    # with open("/Users/Raha/PycharmProjects/tictactoe/ticTacToe.pickle", "wb") as f:
+    #     pickle.dump(ticTacToe.moves, f)
     print json.dumps(ticTacToe.moves["START"], indent=4)
-
     #Run game with user on keyboard
     print "Let's play some Tic Tac Toe"
     whichPlayer = ""
@@ -202,8 +212,9 @@ if __name__ == '__main__':
                     prompt = "%s,%s" % (prompt, move)
             move = raw_input("Your move: [prompt]  ")
             ticTacToe.board = "%s%s" % (ticTacToe.board, move)
-            ticTacToe.make_move()
-            print "I moved. The board is now: %s" % ticTacToe.board
+            if len(ticTacToe.board) != 9:
+                ticTacToe.make_move()
+                print "I moved. The board is now: %s" % ticTacToe.board
         if ticTacToe.result() == ticTacToe.VICTORY:
             if ticTacToe.hasWon(ticTacToe.PLAYER1):
                 winner = "you"
@@ -212,3 +223,4 @@ if __name__ == '__main__':
             resultMsg = "The game ended in a victory for %s." % winner
         elif ticTacToe.result() == ticTacToe.DRAW:
             resultMsg = "The game ended in a draw."
+        print resultMsg

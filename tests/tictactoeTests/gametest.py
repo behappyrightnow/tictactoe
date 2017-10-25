@@ -2,10 +2,24 @@ import unittest
 from tictactoe.game import TicTacToe
 from smarttest import SmartTest
 
+class MockTicTacToe(TicTacToe):
+    def init_moves_knowledge(self, board=""):
+        prior = board
+        if prior == "":
+            prior = "START"
+        for i in range(1,self.numSquares+1):
+            newMove = str(i)
+            if newMove not in board:
+                newBoard = "%s%s" % (board, newMove)
+                if prior not in self.moves:
+                    self.moves[prior] = {}
+                self.moves[prior][newBoard] = self.null_knowledge()
+                self.init_moves_knowledge(newBoard)
+
 class TicTacToeTest(SmartTest):
 
     def setUp(self):
-        self.ticTacToe = TicTacToe(numSquares=3)
+        self.ticTacToe = MockTicTacToe(numSquares=3)
 
     def testInitializeGame(self):
         pass
@@ -106,6 +120,23 @@ class TicTacToeTest(SmartTest):
         self.ticTacToe.board = "1593748"
         self.assertEquals("1978", self.ticTacToe.movesFor(self.ticTacToe.PLAYER1), "moves for player 1")
         self.assertEquals("534", self.ticTacToe.movesFor(self.ticTacToe.PLAYER2), "moves for player 2")
+
+    def test_availableMoves(self):
+        self.ticTacToe.board = "35714"
+        expected_available_moves = ["2","6","8","9"]
+        self.assertEquals(expected_available_moves, self.ticTacToe.available_moves(), "available moves")
+
+    def test_winningMove(self):
+        self.ticTacToe.board = "35714"
+        next_move = self.ticTacToe.next_move()
+        self.assertEquals("357149", next_move, "game should be won by Player 2 at this point")
+        self.assertTrue(self.ticTacToe.hasWon(self.ticTacToe.PLAYER2), "Player 2 should have won")
+
+    def test_winningMove2(self):
+        self.ticTacToe.board = "19572"
+        next_move = self.ticTacToe.next_move()
+        self.assertEquals("195728", next_move, "game should be won by Player 2 at this point")
+        self.assertTrue(self.ticTacToe.hasWon(self.ticTacToe.PLAYER2), "Player 2 should have won")
 
 if __name__ == '__main__':
     unittest.main()
